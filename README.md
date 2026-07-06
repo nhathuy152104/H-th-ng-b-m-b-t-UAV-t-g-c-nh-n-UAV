@@ -78,7 +78,7 @@ python tracking/analysis_results.py # need to modify tracker configs and names
 ```
 python tracking/test.py ostrack vitb_384_mae_ce_32x4_ep300 --dataset antiuav410_test --threads 1 --num_gpus 1 --debug 1
 ```
-3. Chạy lệnh `http://localhost:8097` 
+3. Mở `http://localhost:8097` 
 
 4. Kết quả hiển thị
 
