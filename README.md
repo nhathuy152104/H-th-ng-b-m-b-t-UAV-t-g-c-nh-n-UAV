@@ -27,13 +27,6 @@ OSTrack-256 can be trained in ~24 hours with 4*V100 (16GB of memory per GPU), wh
   
 3. Pretrained Transformer weights enable faster convergence.
 
-### :star2: Good performance-speed trade-off
-
-[//]: # (![speed_vs_performance]&#40;https://github.com/botaoye/OSTrack/blob/main/assets/speed_vs_performance.png&#41;)
-<p align="center">
-  <img width="70%" src="https://github.com/botaoye/OSTrack/blob/main/assets/speed_vs_performance.png" alt="speed_vs_performance"/>
-</p>
-
 ## Cài đặt môi trường 
 
 Sử dụng Anaconda (CUDA 11.3)
@@ -47,18 +40,19 @@ conda env create -f ostrack_cuda113_env.yaml
 python tracking/create_default_local_file.py --workspace_dir . --data_dir ./data --save_dir ./output
 ```
 
-## Data Preparation
-Put the tracking datasets in ./data. It should look like this:
-   ```
-   ${PROJECT_ROOT}
-    -- data
-        -- AntiUAV410
-            |-- train
-            |-- test
-            |-- val
-            ...
+## Chuẩn bị data
+Link tải data: https://drive.google.com/file/d/1zsdazmKS3mHaEZWS2BnqbYHPEcIaH5WR/view
+Tải về, giải nén và đặt data vào cấu trúc như hình
+```
+${PROJECT_ROOT}
+-- data
+    -- AntiUAV410
+        |-- train
+        |-- test
+        |-- val
+        ...
 
-   ```
+```
 
 
 ## Huấn luyện 
@@ -78,7 +72,7 @@ python tracking/test.py ostrack vitb_384_mae_ce_32x4_ep300 --dataset antiuav410_
 python tracking/analysis_results.py # need to modify tracker configs and names
 ```
 
-## Visualization or Debug 
+## Hiển thị
 [Visdom](https://github.com/fossasia/visdom) is used for visualization. 
 1. Mở một terminal khác và chạy visdom
 
