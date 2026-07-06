@@ -28,9 +28,9 @@ Trong đề tài này, mô hình được huấn luyện và đánh giá trên b
 ## Cài đặt môi trường 
 
 Sử dụng Anaconda (CUDA 11.3)
-
+```
 conda env create -f ostrack_cuda113_env.yaml
-
+```
 
 
 ## Thiết lập đường dẫn 
