@@ -19,14 +19,12 @@ Trong đề tài này, mô hình được huấn luyện và đánh giá trên b
 5. Nền phức tạp và nhiều nhiễu.
 
 ### :star2: Đặc điểm nổi bật 
-OSTrack-256 can be trained in ~24 hours with 4*V100 (16GB of memory per GPU), which is much faster than recent SOTA transformer-based trackers. The fast training speed comes from:
 
-1. While previous Siamese-style trackers required separate feeding of the template and search region into the backbone at each iteration of training, OSTrack directly combines the template and search region. The tight and highly parallelized structure results in improved training and inference speed.
-  
-2. The proposed early candidate elimination (ECE) module significantly reduces memory and time consumption.
-  
-3. Pretrained Transformer weights enable faster convergence.
-
+1. Sử dụng kiến trúc **One-Stream Transformer** giúp giảm thời gian huấn luyện và suy luận.
+2. Kết hợp trực tiếp **template** và **search region** trong một lần truyền qua backbone.
+3. Tích hợp cơ chế **Early Candidate Elimination (ECE)** giúp giảm số lượng token cần xử lý, từ đó giảm chi phí tính toán và bộ nhớ.
+4. Sử dụng trọng số **MAE ViT-Base** được huấn luyện trước giúp mô hình hội tụ nhanh và đạt hiệu quả cao.
+5. Được tùy chỉnh để huấn luyện và đánh giá trên bộ dữ liệu **Anti-UAV410**.
 ## Cài đặt môi trường 
 
 Sử dụng Anaconda (CUDA 11.3)
