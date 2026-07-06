@@ -5,13 +5,20 @@
 </p>
 
 
-### :star2: New One-stream Tracking Framework
-OSTrack is a simple, neat, high-performance **one-stream tracking framework** for joint feature learning and relational modeling based on self-attention operators.
-Without any additional temporal information, OSTrack achieves SOTA performance on multiple benchmarks. OSTrack can serve as a strong baseline for further research.
+### :star2: Giới thiệu
+Dự án xây dựng hệ thống bám bắt UAV từ góc nhìn của một UAV khác (UAV-to-UAV Tracking) dựa trên mô hình OSTrack (One-Stream Tracker).
 
+Khác với các bộ theo dõi Siamese truyền thống, OSTrack kết hợp trực tiếp template và search region thành một chuỗi đầu vào duy nhất cho Vision Transformer, giúp mô hình học đồng thời đặc trưng và quan hệ giữa hai vùng ảnh. Nhờ đó, hệ thống đạt được tốc độ suy luận cao trong khi vẫn duy trì độ chính xác tốt.
 
+Trong đề tài này, mô hình được huấn luyện và đánh giá trên bộ dữ liệu Anti-UAV410, hướng tới bài toán theo dõi UAV trong điều kiện:
 
-### :star2: Fast Training
+1. UAV mục tiêu có kích thước nhỏ.
+2. Góc nhìn thay đổi liên tục.
+3. Chuyển động nhanh.
+4. Mất mục tiêu tạm thời.
+5. Nền phức tạp và nhiều nhiễu.
+
+### :star2: Đặc điểm nổi bật 
 OSTrack-256 can be trained in ~24 hours with 4*V100 (16GB of memory per GPU), which is much faster than recent SOTA transformer-based trackers. The fast training speed comes from:
 
 1. While previous Siamese-style trackers required separate feeding of the template and search region into the backbone at each iteration of training, OSTrack directly combines the template and search region. The tight and highly parallelized structure results in improved training and inference speed.
@@ -27,33 +34,17 @@ OSTrack-256 can be trained in ~24 hours with 4*V100 (16GB of memory per GPU), wh
   <img width="70%" src="https://github.com/botaoye/OSTrack/blob/main/assets/speed_vs_performance.png" alt="speed_vs_performance"/>
 </p>
 
-## Install the environment
-**Option1**: Use the Anaconda (CUDA 10.2)
-```
-conda create -n ostrack python=3.8
-conda activate ostrack
-bash install.sh
-```
+## Cài đặt môi trường 
 
-**Option2**: Use the Anaconda (CUDA 11.3)
-```
+Sử dụng Anaconda (CUDA 11.3)
+
 conda env create -f ostrack_cuda113_env.yaml
-```
-
-**Option3**: Use the docker file
-
-We provide the full docker file here.
 
 
-## Set project paths
-Run the following command to set paths for this project
+
+## Thiết lập đường dẫn 
 ```
 python tracking/create_default_local_file.py --workspace_dir . --data_dir ./data --save_dir ./output
-```
-After running this command, you can also modify paths by editing these two files
-```
-lib/train/admin/local.py  # paths about training
-lib/test/evaluation/local.py  # paths about testing
 ```
 
 ## Data Preparation
@@ -61,78 +52,48 @@ Put the tracking datasets in ./data. It should look like this:
    ```
    ${PROJECT_ROOT}
     -- data
-        -- lasot
-            |-- airplane
-            |-- basketball
-            |-- bear
-            ...
-        -- got10k
-            |-- test
+        -- AntiUAV410
             |-- train
+            |-- test
             |-- val
-        -- coco
-            |-- annotations
-            |-- images
-        -- trackingnet
-            |-- TRAIN_0
-            |-- TRAIN_1
             ...
-            |-- TRAIN_11
-            |-- TEST
+
    ```
 
 
-## Training
-Download pre-trained [MAE ViT-Base weights](https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth) and put it under `$PROJECT_ROOT$/pretrained_models` (different pretrained models can also be used, see [MAE](https://github.com/facebookresearch/mae) for more details).
-
+## Huấn luyện 
+Tải pretrained backbone [MAE ViT-Base weights](https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth) và đặt vào `$PROJECT_ROOT$/pretrained_models` 
 ```
 python tracking/train.py --script ostrack --config vitb_256_mae_ce_32x4_ep300 --save_dir ./output --mode multiple --nproc_per_node 4 --use_wandb 1
 ```
 
-Replace `--config` with the desired model config under `experiments/ostrack`. We use [wandb](https://github.com/wandb/client) to record detailed training logs, in case you don't want to use wandb, set `--use_wandb 0`.
+## Kiểm thử 
+Tải model weight [Google Drive](https://drive.google.com/drive/folders/1PS4inLS8bWNCecpYZ0W2fE5-A04DvTcd?usp=sharing) 
+
+Đặt model weights ở `$PROJECT_ROOT$/output/checkpoints/train/ostrack`
 
 
-## Evaluation
-Download the model weights from [Google Drive](https://drive.google.com/drive/folders/1PS4inLS8bWNCecpYZ0W2fE5-A04DvTcd?usp=sharing) 
-
-Put the downloaded weights on `$PROJECT_ROOT$/output/checkpoints/train/ostrack`
-
-Change the corresponding values of `lib/test/evaluation/local.py` to the actual benchmark saving paths
-
-Some testing examples:
-- LaSOT or other off-line evaluated benchmarks (modify `--dataset` correspondingly)
 ```
-python tracking/test.py ostrack vitb_384_mae_ce_32x4_ep300 --dataset lasot --threads 16 --num_gpus 4
+python tracking/test.py ostrack vitb_384_mae_ce_32x4_ep300 --dataset antiuav410_test
 python tracking/analysis_results.py # need to modify tracker configs and names
-```
-- GOT10K-test
-```
-python tracking/test.py ostrack vitb_384_mae_ce_32x4_got10k_ep100 --dataset got10k_test --threads 16 --num_gpus 4
-python lib/test/utils/transform_got10k.py --tracker_name ostrack --cfg_name vitb_384_mae_ce_32x4_got10k_ep100
-```
-- TrackingNet
-```
-python tracking/test.py ostrack vitb_384_mae_ce_32x4_ep300 --dataset trackingnet --threads 16 --num_gpus 4
-python lib/test/utils/transform_trackingnet.py --tracker_name ostrack --cfg_name vitb_384_mae_ce_32x4_ep300
 ```
 
 ## Visualization or Debug 
 [Visdom](https://github.com/fossasia/visdom) is used for visualization. 
-1. Alive visdom in the server by running `visdom`:
+1. Mở một terminal khác và chạy visdom
 
-2. Simply set `--debug 1` during inference for visualization, e.g.:
+2. Chạy lệnh 
 ```
-python tracking/test.py ostrack vitb_384_mae_ce_32x4_ep300 --dataset vot22 --threads 1 --num_gpus 1 --debug 1
+python tracking/test.py ostrack vitb_384_mae_ce_32x4_ep300 --dataset antiuav410_test --threads 1 --num_gpus 1 --debug 1
 ```
-3. Open `http://localhost:8097` in your browser (remember to change the IP address and port according to the actual situation).
+3. Chạy lệnh `http://localhost:8097` 
 
-4. Then you can visualize the candidate elimination process.
+4. Kết quả hiển thị
 
 ![ECE_vis](https://github.com/botaoye/OSTrack/blob/main/assets/vis.png)
 
 
-## Test FLOPs, and Speed
-*Note:* The speeds reported in our paper were tested on a single RTX2080Ti GPU.
+## Kiêm tra tốc độ 
 
 ```
 # Profiling vitb_256_mae_ce_32x4_ep300
@@ -142,19 +103,3 @@ python tracking/profile_model.py --script ostrack --config vitb_384_mae_ce_32x4_
 ```
 
 
-## Acknowledgments
-* Thanks for the [STARK](https://github.com/researchmm/Stark) and [PyTracking](https://github.com/visionml/pytracking) library, which helps us to quickly implement our ideas.
-* We use the implementation of the ViT from the [Timm](https://github.com/rwightman/pytorch-image-models) repo.  
-
-
-## Citation
-If our work is useful for your research, please consider citing:
-
-```Bibtex
-@inproceedings{ye2022ostrack,
-  title={Joint Feature Learning and Relation Modeling for Tracking: A One-Stream Framework},
-  author={Ye, Botao and Chang, Hong and Ma, Bingpeng and Shan, Shiguang and Chen, Xilin},
-  booktitle={ECCV},
-  year={2022}
-}
-```
