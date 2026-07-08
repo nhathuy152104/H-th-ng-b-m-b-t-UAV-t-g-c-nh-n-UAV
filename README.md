@@ -56,7 +56,7 @@ ${PROJECT_ROOT}
 ## Huấn luyện 
 Tải pretrained backbone [MAE ViT-Base weights](https://dl.fbaipublicfiles.com/mae/pretrain/mae_pretrain_vit_base.pth) và đặt vào `$PROJECT_ROOT$/pretrained_models` 
 ```
-python tracking/train.py --script ostrack --config vitb_256_mae_ce_32x4_ep300 --save_dir ./output --mode multiple --nproc_per_node 4 --use_wandb 1
+python tracking/train.py --script ostrack --config vitb_256_mae_ce_32x4_ep300 --save_dir ./output 
 ```
 
 ## Kiểm thử 
