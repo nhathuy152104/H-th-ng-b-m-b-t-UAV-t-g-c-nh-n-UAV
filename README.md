@@ -71,7 +71,6 @@ python tracking/analysis_results.py # need to modify tracker configs and names
 ```
 
 ## Hiển thị
-[Visdom](https://github.com/fossasia/visdom) is used for visualization. 
 1. Mở một terminal khác và chạy visdom
 
 2. Chạy lệnh 
